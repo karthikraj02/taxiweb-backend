@@ -18,6 +18,7 @@ const paymentRoutes = require('./routes/payments');
 const driverRoutes = require('./routes/drivers');
 
 const app = express();
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 
 connectDB();
@@ -48,7 +49,7 @@ const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
   cookieName: 'x-csrf-token',
   cookieOptions: {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     secure: process.env.NODE_ENV === 'production',
   },
   size: 64,
