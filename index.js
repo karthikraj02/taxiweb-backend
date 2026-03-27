@@ -6,7 +6,6 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
-const { doubleCsrf } = require('csrf-csrf');
 const connectDB = require('./config/db');
 const { initSocket } = require('./socket');
 const errorHandler = require('./middleware/errorHandler');
@@ -29,11 +28,10 @@ app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:3000',
   credentials: true
 }));
-app.use(morgan('dev'));
+app.use(morgan('dev')); 
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET || 'fallback_cookie_secret_for_production_xyz123'));
 
-// General API rate limiter (100 req / 15 min per IP)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -42,28 +40,7 @@ const apiLimiter = rateLimit({
   message: { message: 'Too many requests, please try again later' }
 });
 
-// CSRF protection using double-submit cookie pattern
-const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
-  getSecret: () => process.env.JWT_SECRET || 'csrf_secret_dev',
-  getSessionIdentifier: (req) => req.ip || 'anonymous',
-  cookieName: 'x-csrf-token',
-  cookieOptions: {
-    httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    signed: true
-  },
-  size: 64,
-  ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
-});
-
 app.use('/api', apiLimiter);
-app.use('/api', doubleCsrfProtection);
-
-// Expose CSRF token endpoint so the SPA can fetch it
-app.get('/api/csrf-token', (req, res) => {
-  res.json({ csrfToken: generateCsrfToken(req, res) });
-});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
