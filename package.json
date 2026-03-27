@@ -22,7 +22,6 @@
     "morgan": "^1.10.0",
     "razorpay": "^2.9.2",
     "socket.io": "^4.6.1",
-    "taxiweb": "file:..",
     "twilio": "^4.20.0",
     "uuid": "^9.0.1"
   },
