@@ -51,6 +51,7 @@ const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
     httpOnly: true,
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     secure: process.env.NODE_ENV === 'production',
+    signed: true
   },
   size: 64,
   ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
