@@ -24,8 +24,15 @@ connectDB();
 initSocket(server);
 
 app.use(helmet());
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://taxiweb-frontend.vercel.app',
+  process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(morgan('dev')); 
