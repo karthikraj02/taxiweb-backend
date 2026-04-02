@@ -81,11 +81,8 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const mongoose = require('mongoose');
-    const queryId = req.params.id;
-    const isValidId = mongoose.Types.ObjectId.isValid(queryId);
     const booking = await Booking.findOne({
-      $or: isValidId ? [{ _id: queryId }, { bookingId: queryId }] : [{ bookingId: queryId }],
+      $or: [{ _id: req.params.id }, { bookingId: req.params.id }],
       ...(req.user.role !== 'admin' ? { user: req.user._id } : {})
     }).populate('driver').populate('payment');
     if (!booking) return res.status(404).json({ message: 'Booking not found' });

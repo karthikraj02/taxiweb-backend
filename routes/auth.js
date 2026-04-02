@@ -31,11 +31,11 @@ const generateTokens = async (user) => {
 const setTokenCookies = (res, accessToken, refreshToken) => {
   const isProduction = process.env.NODE_ENV === 'production';
   res.cookie('accessToken', accessToken, {
-    httpOnly: true, secure: isProduction, sameSite: isProduction ? 'none' : 'lax',
+    httpOnly: true, secure: isProduction, sameSite: 'lax',
     maxAge: 15 * 60 * 1000
   });
   res.cookie('refreshToken', refreshToken, {
-    httpOnly: true, secure: isProduction, sameSite: isProduction ? 'none' : 'lax',
+    httpOnly: true, secure: isProduction, sameSite: 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
 };
@@ -154,12 +154,8 @@ router.post('/logout', authLimiter, async (req, res, next) => {
     if (token) {
       await RefreshToken.updateOne({ token }, { isRevoked: true });
     }
-    res.clearCookie('accessToken', {
-      httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-    });
-    res.clearCookie('refreshToken', {
-      httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-    });
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
     res.json({ message: 'Logged out successfully' });
   } catch (err) {
     next(err);

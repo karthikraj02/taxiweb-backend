@@ -19,10 +19,8 @@ router.post('/razorpay/order', protect, async (req, res, next) => {
     const { bookingId, amount } = req.body;
     if (!bookingId) return res.status(400).json({ message: 'bookingId is required' });
 
-    const mongoose = require('mongoose');
-    const isValidId = mongoose.Types.ObjectId.isValid(bookingId);
     const booking = await Booking.findOne({
-      $or: isValidId ? [{ _id: bookingId }, { bookingId: bookingId }] : [{ bookingId: bookingId }],
+      $or: [{ _id: bookingId }, { bookingId: bookingId }],
       user: req.user._id
     });
     if (!booking) return res.status(404).json({ message: 'Booking not found' });

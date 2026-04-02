@@ -6,15 +6,9 @@ let io;
 const UDUPI = { lat: 13.3409, lng: 74.7421 };
 
 function initSocket(server) {
-  const allowedOrigins = [
-    'http://localhost:3000',
-    'https://taxiweb-frontend.vercel.app',
-    process.env.CLIENT_URL
-  ].filter(Boolean);
-
   io = new Server(server, {
     cors: {
-      origin: allowedOrigins,
+      origin: process.env.CLIENT_URL || 'http://localhost:3000',
       credentials: true
     }
   });
